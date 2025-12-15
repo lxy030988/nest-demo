@@ -31,12 +31,12 @@ module.exports = {
       env: {
         NODE_ENV: 'development',
         TS_NODE_PROJECT: './tsconfig.json',
-        PORT: 3000, // cluster 模式会自动递增
+        PORT: 3001, // cluster 模式会自动递增
       },
       env_production: {
         NODE_ENV: 'production',
         TS_NODE_PROJECT: './tsconfig.json',
-        PORT: 3000, // cluster 模式会自动递增
+        PORT: 3002, // cluster 模式会自动递增
       },
 
       // 日志配置

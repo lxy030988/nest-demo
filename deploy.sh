@@ -8,7 +8,7 @@ echo "🚀 开始零停机部署..."
 
 # 1. 拉取最新代码
 echo "📥 拉取最新代码..."
-git pull origin master
+git pull origin main
 
 # 2. 安装依赖
 echo "📦 安装依赖..."
