@@ -6,6 +6,9 @@ echo "🚀 开始部署..."
 # 读取 .env
 source .env
 
+# 使用生产环境数据库URL
+DATABASE_URL="${DATABASE_URL_PROD}"
+
 echo "📦 构建..."
 pnpm build
 
