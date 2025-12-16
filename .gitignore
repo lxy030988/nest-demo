@@ -116,3 +116,4 @@ dist
 .pnp.*
 
 /generated/prisma
+.aws-sam
