@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { GithubModule } from './modules/github/github.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -16,6 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     UsersModule,
     PostsModule,
+    GithubModule,
   ],
   controllers: [AppController],
   providers: [AppService],
