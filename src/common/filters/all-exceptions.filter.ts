@@ -64,11 +64,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else {
       // 返回 HTML 页面（浏览器请求）
       if (status === 404) {
-        response.status(404).sendFile(join(__dirname, '..', '..', '404.html'));
+        // __dirname 是 dist/src/common/filters，向上3级到 dist
+        response.status(404).sendFile(join(__dirname, '../../..', '404.html'));
       } else {
         response
           .status(status)
-          .sendFile(join(__dirname, '..', '..', '500.html'));
+          .sendFile(join(__dirname, '../../..', '500.html'));
       }
     }
   }

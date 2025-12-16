@@ -9,18 +9,12 @@ export class AppController {
 
   @Get()
   getIndex(@Res() res: Response): void {
-    // 返回 HTML 首页文件
-    res.sendFile(join(__dirname, '..', 'public', 'index.html'));
+    // __dirname 是 dist/src，向上一级到 dist
+    res.sendFile(join(__dirname, '..', 'index.html'));
   }
 
   @Get('api')
   getHello(): string {
     return this.appService.getHello();
-  }
-
-  // 通配符路由 - 捕获所有未匹配的路由
-  @Get('*')
-  handleNotFound() {
-    throw new NotFoundException('Page not found');
   }
 }

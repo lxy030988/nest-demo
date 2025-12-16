@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsBoolean,
+  IsInt,
+} from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -6,12 +12,11 @@ export class CreatePostDto {
   readonly title: string;
 
   @IsString()
-  @IsNotEmpty()
-  readonly content: string;
+  @IsOptional()
+  readonly content?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  readonly authorId: string;
+  @IsInt()
+  readonly authorId: number;
 
   @IsOptional()
   @IsBoolean()

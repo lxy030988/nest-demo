@@ -8,7 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -31,22 +31,18 @@ export class PostsController {
   /**
    * 获取所有文章
    * GET /posts
-   * 支持查询参数：published=true 只获取已发布的文章
    */
   @Get()
-  findAll(@Query('published') published?: string) {
-    if (published === 'true') {
-      return this.postsService.findPublished();
-    }
+  findAll() {
     return this.postsService.findAll();
   }
 
   /**
-   * 根据作者获取文章
+   * 获取指定作者的所有文章
    * GET /posts/author/:authorId
    */
   @Get('author/:authorId')
-  findByAuthor(@Param('authorId') authorId: string) {
+  findByAuthor(@Param('authorId', ParseIntPipe) authorId: number) {
     return this.postsService.findByAuthor(authorId);
   }
 
@@ -55,7 +51,7 @@ export class PostsController {
    * GET /posts/:id
    */
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.findOne(id);
   }
 
@@ -64,7 +60,10 @@ export class PostsController {
    * PATCH /posts/:id
    */
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
     return this.postsService.update(id, updatePostDto);
   }
 
@@ -74,7 +73,7 @@ export class PostsController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.remove(id);
   }
 }
