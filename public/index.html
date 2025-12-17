@@ -148,6 +148,93 @@
         margin-top: 40px;
         opacity: 0.8;
       }
+      /* Form Styles */
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .form-section:last-child {
+        border-bottom: none;
+      }
+      .form-section h3 {
+        color: #4a5568;
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+      .api-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .api-form input[type='text'],
+      .api-form input[type='email'],
+      .api-form input[type='number'],
+      .api-form textarea {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+      .api-form input:focus,
+      .api-form textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      .api-form textarea {
+        width: 100%;
+        resize: vertical;
+      }
+      .api-form label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #4a5568;
+      }
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: white;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: #4299e1;
+      }
+      .btn-warning {
+        background: #ed8936;
+      }
+      .btn-danger {
+        background: #f56565;
+      }
+      .result {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+      }
+      .result.success {
+        background: #c6f6d5;
+        color: #22543d;
+        display: block;
+      }
+      .result.error {
+        background: #fed7d7;
+        color: #742a2a;
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -203,6 +290,98 @@
         </div>
       </div>
 
+      <!-- CRUD 操作表单 -->
+      <div class="card">
+        <h2>🔧 API 测试</h2>
+
+        <!-- 创建用户 -->
+        <div class="form-section">
+          <h3>创建用户</h3>
+          <div class="api-form">
+            <input type="email" id="userEmail" placeholder="邮箱" required />
+            <input type="text" id="userName" placeholder="姓名" />
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="createUser()"
+            >
+              创建用户
+            </button>
+          </div>
+          <div id="createUserResult" class="result"></div>
+        </div>
+
+        <!-- 创建文章 -->
+        <div class="form-section">
+          <h3>创建文章</h3>
+          <div class="api-form">
+            <input type="text" id="postTitle" placeholder="标题" required />
+            <textarea id="postContent" placeholder="内容" rows="3"></textarea>
+            <input
+              type="number"
+              id="postAuthorId"
+              placeholder="作者ID"
+              required
+              min="1"
+            />
+            <label>
+              <input type="checkbox" id="postPublished" checked />
+              发布
+            </label>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="createPost()"
+            >
+              创建文章
+            </button>
+          </div>
+          <div id="createPostResult" class="result"></div>
+        </div>
+
+        <!-- 更新用户 -->
+        <div class="form-section">
+          <h3>更新用户</h3>
+          <div class="api-form">
+            <input
+              type="number"
+              id="updateUserId"
+              placeholder="用户ID"
+              required
+              min="1"
+            />
+            <input type="email" id="updateUserEmail" placeholder="新邮箱" />
+            <input type="text" id="updateUserName" placeholder="新姓名" />
+            <button
+              type="button"
+              class="btn btn-warning"
+              onclick="updateUser()"
+            >
+              更新用户
+            </button>
+          </div>
+          <div id="updateUserResult" class="result"></div>
+        </div>
+
+        <!-- 删除用户 -->
+        <div class="form-section">
+          <h3>删除用户</h3>
+          <div class="api-form">
+            <input
+              type="number"
+              id="deleteUserId"
+              placeholder="用户ID"
+              required
+              min="1"
+            />
+            <button type="button" class="btn btn-danger" onclick="deleteUser()">
+              删除用户
+            </button>
+          </div>
+          <div id="deleteUserResult" class="result"></div>
+        </div>
+      </div>
+
       <div class="card">
         <h2>✨ 项目特性</h2>
         <div class="features">
@@ -233,5 +412,169 @@
         <p>Built with ❤️ using NestJS</p>
       </div>
     </div>
+
+    <script>
+      const API_BASE = window.location.origin;
+
+      // Helper function to show results
+      function showResult(elementId, success, message) {
+        const el = document.getElementById(elementId);
+        el.className = `result ${success ? 'success' : 'error'}`;
+        el.textContent = message;
+        setTimeout(() => {
+          el.style.display = 'none';
+        }, 5000);
+      }
+
+      // Create User
+      async function createUser() {
+        const email = document.getElementById('userEmail').value;
+        const name = document.getElementById('userName').value;
+
+        if (!email) {
+          showResult('createUserResult', false, '请填写邮箱');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, name: name || undefined }),
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            showResult(
+              'createUserResult',
+              true,
+              `用户创建成功！ID: ${data.data.id}`,
+            );
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userName').value = '';
+          } else {
+            showResult('createUserResult', false, data.message || '创建失败');
+          }
+        } catch (error) {
+          showResult('createUserResult', false, '请求失败: ' + error.message);
+        }
+      }
+
+      // Create Post
+      async function createPost() {
+        const title = document.getElementById('postTitle').value;
+        const content = document.getElementById('postContent').value;
+        const authorId = parseInt(
+          document.getElementById('postAuthorId').value,
+        );
+        const published = document.getElementById('postPublished').checked;
+
+        if (!title || !authorId) {
+          showResult('createPostResult', false, '请填写标题和作者ID');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/posts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title,
+              content: content || undefined,
+              authorId,
+              published,
+            }),
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            showResult(
+              'createPostResult',
+              true,
+              `文章创建成功！ID: ${data.data.id}`,
+            );
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('postAuthorId').value = '';
+            document.getElementById('postPublished').checked = true;
+          } else {
+            showResult('createPostResult', false, data.message || '创建失败');
+          }
+        } catch (error) {
+          showResult('createPostResult', false, '请求失败: ' + error.message);
+        }
+      }
+
+      // Update User
+      async function updateUser() {
+        const id = document.getElementById('updateUserId').value;
+        const email = document.getElementById('updateUserEmail').value;
+        const name = document.getElementById('updateUserName').value;
+
+        if (!id) {
+          showResult('updateUserResult', false, '请填写用户ID');
+          return;
+        }
+
+        const updateData = {};
+        if (email) updateData.email = email;
+        if (name) updateData.name = name;
+
+        if (Object.keys(updateData).length === 0) {
+          showResult('updateUserResult', false, '请至少填写一个要更新的字段');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/users/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData),
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            showResult('updateUserResult', true, '用户更新成功！');
+            document.getElementById('updateUserId').value = '';
+            document.getElementById('updateUserEmail').value = '';
+            document.getElementById('updateUserName').value = '';
+          } else {
+            showResult('updateUserResult', false, data.message || '更新失败');
+          }
+        } catch (error) {
+          showResult('updateUserResult', false, '请求失败: ' + error.message);
+        }
+      }
+
+      // Delete User
+      async function deleteUser() {
+        const id = document.getElementById('deleteUserId').value;
+
+        if (!id) {
+          showResult('deleteUserResult', false, '请填写用户ID');
+          return;
+        }
+
+        if (!confirm(`确定要删除用户 #${id} 吗？此操作不可撤销！`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/users/${id}`, {
+            method: 'DELETE',
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            showResult('deleteUserResult', true, '用户删除成功！');
+            document.getElementById('deleteUserId').value = '';
+          } else {
+            showResult('deleteUserResult', false, data.message || '删除失败');
+          }
+        } catch (error) {
+          showResult('deleteUserResult', false, '请求失败: ' + error.message);
+        }
+      }
+    </script>
   </body>
 </html>

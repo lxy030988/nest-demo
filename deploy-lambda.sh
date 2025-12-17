@@ -16,6 +16,10 @@ pnpm build
 echo "🔧 生成 Prisma Client..."
 pnpm prisma generate
 
+# 应用数据库迁移到生产环境
+echo "🗄️ 应用数据库迁移..."
+pnpm prisma migrate deploy
+
 # SAM 构建
 sam build
 
